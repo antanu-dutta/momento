@@ -24,11 +24,18 @@ export const signup = async (req, res) => {
     await user.save();
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
-    res.cookie("token", token);
+
+    // Set token in cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     res.status(201).json({
       message: "User created",
-      token,
-      user: { id: user._id, name: user.name, email: user.email },
+      user: { id: user._id, name: user.fullname, email: user.email },
     });
   } catch (err) {
     console.error(err);
@@ -49,11 +56,18 @@ export const login = async (req, res) => {
     if (!match) return res.status(401).json({ message: "Invalid credentials" });
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
-    res.cookie("token", token);
+
+    // Set token in cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
     res.json({
       message: "Login successful",
-      token,
-      user: { id: user._id, name: user.name, email: user.email },
+      user: { id: user._id, name: user.fullname, email: user.email },
     });
   } catch (err) {
     console.error(err);

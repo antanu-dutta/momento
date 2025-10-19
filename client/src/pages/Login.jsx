@@ -5,7 +5,7 @@ import { api } from "../api/api";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { setUser } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,10 +35,10 @@ const Login = () => {
       });
 
       // Handle successful login
-      const { token, user } = response.data;
+      const { user } = response.data;
 
       // Update auth context
-      login({ ...user, token });
+      setUser(user);
 
       // Clear form
       setEmail("");

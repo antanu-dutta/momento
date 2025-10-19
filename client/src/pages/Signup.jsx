@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { setUser } = useAuth();
 
   const [fullname, setfullname] = useState("");
   const [email, setEmail] = useState("");
@@ -48,7 +48,7 @@ const Signup = () => {
       localStorage.setItem("token", token);
 
       // Update auth context
-      login({ ...user, token });
+      setUser(user);
 
       // Clear form
       setfullname("");
