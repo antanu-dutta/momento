@@ -1,7 +1,14 @@
 import React from "react";
 
+import StatsContainer from "../components/StatsContainer";
+
 const DashboardInfo = () => {
-  return <div>DashboardInfo</div>;
+  const stats = [{}];
+  return (
+    <>
+      <StatsContainer />
+    </>
+  );
 };
 
 export default DashboardInfo;

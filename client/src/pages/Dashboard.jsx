@@ -14,7 +14,7 @@ const Dashboard = () => {
       {/* Sidebar */}
       <div className="w-1/6 bg-white shadow-2xl h-screen flex flex-col">
         {/* Profile info */}
-        <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl m-4 shadow-md">
+        <div className="flex flex-col items-center justify-center p-4 bg-white rounded m-4 shadow-md">
           <div className="relative">
             <img
               src="https://scontent.fccu32-1.fna.fbcdn.net/v/t39.30808-1/437942922_122130784034229589_2608333589194260663_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=101&ccb=1-7&_nc_sid=e99d92&_nc_ohc=n_Hxz15FWmoQ7kNvwGw0eSn&_nc_oc=AdnmPksfKzib_Y3rl7A1KhPrNzCGiDx48wierdA1oQ3TBmNc38om6rDtVxZ5TgbQsc4&_nc_zt=24&_nc_ht=scontent.fccu32-1.fna&_nc_gid=3yY-V8PII2usiLr6HoiMoA&oh=00_AfcOc05gTtTdruur1dD14q6zf9iH2bC2N3ct8OfJ79keFg&oe=68FAA590"
@@ -36,7 +36,7 @@ const Dashboard = () => {
                 <NavLink
                   to={link.path}
                   className={({ isActive }) =>
-                    `flex items-center px-4 py-2 rounded-lg transition-colors duration-200
+                    `flex items-center px-4 py-2 rounded transition-colors duration-200
                      ${
                        isActive
                          ? "bg-blue-500 text-white"
