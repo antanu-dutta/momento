@@ -5,16 +5,24 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // added loading state
 
   const getMe = async () => {
     try {
-      const response = await api.get("/auth/me");
+      setLoading(true);
+      const response = await api.get("/auth/me", {
+        withCredentials: true, // ensure cookies are sent if your backend uses them
+      });
       if (response.status === 200) {
         setUser(response.data.user);
+      } else {
+        setUser(null);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch user:", error);
       setUser(null);
+    } finally {
+      setLoading(false); // done fetching
     }
   };
 
@@ -23,7 +31,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, getMe }}>
+    <AuthContext.Provider value={{ user, setUser, getMe, loading }}>
       {children}
     </AuthContext.Provider>
   );

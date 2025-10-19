@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import Signup from "./pages/Signup";
 import { useState } from "react";
+import DashboardInfo from "./pages/DashboardInfo";
 
 // ✅ App Component
 const App = () => {
@@ -19,7 +20,9 @@ const App = () => {
               <Dashboard />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<DashboardInfo />} />
+        </Route>
 
         {/* Public Route */}
         <Route path="/login" element={<Login />} />
