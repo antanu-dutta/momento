@@ -24,7 +24,7 @@ export const signup = async (req, res) => {
     await user.save();
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
-
+    res.cookie("token", token);
     res.status(201).json({
       message: "User created",
       token,
