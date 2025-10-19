@@ -6,8 +6,8 @@ const JWT_SECRET = process.env.JWT_SECRET || "change_this_secret";
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
+    const { fullname, email, password } = req.body;
+    if (!fullname || !email || !password) {
       return res
         .status(400)
         .json({ message: "Name, email and password are required" });
@@ -20,7 +20,7 @@ export const signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
 
-    const user = new User({ name, email, password: hashed });
+    const user = new User({ fullname, email, password: hashed });
     await user.save();
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });

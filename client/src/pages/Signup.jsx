@@ -1,29 +1,86 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { api } from "../api/api";
+import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
-  const [fullName, setFullName] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const [fullname, setfullname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!fullName) {
+    // Form validation
+    if (!fullname.trim()) {
       return setError("Name is required");
-    } else if (!email) {
+    } else if (!email.trim()) {
       return setError("Email is required");
+    } else if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      return setError("Please enter a valid email address");
     } else if (!password) {
       return setError("Password is required");
+    } else if (password.length < 6) {
+      return setError("Password must be at least 6 characters long");
     } else if (password !== confirmPassword) {
-      return setError(`Password did not match`);
+      return setError("Passwords do not match");
     }
 
     try {
+      setIsLoading(true);
       setError(null);
+
+      const response = await api.post("/auth/signup", {
+        fullname,
+        email,
+        password,
+      });
+
+      // Handle successful signup
+      const { token, user } = response.data;
+
+      // Store token in localStorage
+      localStorage.setItem("token", token);
+
+      // Update auth context
+      login({ ...user, token });
+
+      // Clear form
+      setfullname("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+
+      // Redirect to dashboard
+      navigate("/");
     } catch (error) {
-      console.error(error);
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with an error
+        if (error.response.status === 409) {
+          setError("Email is already registered");
+        } else if (error.response.data?.message) {
+          setError(error.response.data.message);
+        } else {
+          setError("Registration failed. Please try again.");
+        }
+      } else if (error.request) {
+        // Request was made but no response
+        setError(
+          "Cannot connect to server. Please check your internet connection."
+        );
+      } else {
+        // Something else went wrong
+        setError("An unexpected error occurred. Please try again.");
+      }
+      console.error("Signup error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -36,6 +93,7 @@ const Signup = () => {
         </h3>
 
         {/* Form */}
+
         <form className="space-y-6" onSubmit={handleFormSubmit}>
           {/* Name */}
           <div>
@@ -49,8 +107,8 @@ const Signup = () => {
               type="text"
               id="name"
               placeholder="John Doe"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              value={fullname}
+              onChange={(e) => setfullname(e.target.value)}
               className="w-full rounded border border-gray-300 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none px-3 py-2 transition-all bg-gray-50"
             />
           </div>
@@ -114,9 +172,12 @@ const Signup = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded transition-all shadow-md"
+            disabled={isLoading}
+            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded transition-all shadow-md ${
+              isLoading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Sign Up
+            {isLoading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
 

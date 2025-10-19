@@ -1,22 +1,74 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../api/api";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!email) {
+
+    // Form validation
+    if (!email.trim()) {
       return setError("Email is required");
+    } else if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      return setError("Please enter a valid email address");
     } else if (!password) {
       return setError("Password is required");
     }
+
     try {
+      setIsLoading(true);
       setError(null);
+
+      // Make login request
+      const response = await api.post("/auth/login", {
+        email,
+        password,
+      });
+
+      // Handle successful login
+      const { token, user } = response.data;
+
+      // Update auth context
+      login({ ...user, token });
+
+      // Clear form
+      setEmail("");
+      setPassword("");
+
+      // Redirect to dashboard
+      navigate("/");
     } catch (error) {
-      console.error(error);
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with an error
+        if (error.response.status === 401) {
+          setError("Invalid email or password");
+        } else if (error.response.data?.message) {
+          setError(error.response.data.message);
+        } else {
+          setError("Login failed. Please try again.");
+        }
+      } else if (error.request) {
+        // Request was made but no response
+        setError(
+          "Cannot connect to server. Please check your internet connection."
+        );
+      } else {
+        // Something else went wrong
+        setError("An unexpected error occurred. Please try again.");
+      }
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -27,6 +79,13 @@ const Login = () => {
         <h3 className="text-center text-3xl font-bold text-gray-800 mb-8">
           Login
         </h3>
+
+        {/* Error Display */}
+        {/* {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )} */}
 
         {/* Form */}
         <form className="space-y-6" onSubmit={handleFormSubmit}>
@@ -83,9 +142,12 @@ const Login = () => {
           {/* Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 cursor-pointer hover:bg-blue-600 text-white font-semibold py-2 rounded transition-all shadow-md"
+            disabled={isLoading}
+            className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded transition-all shadow-md ${
+              isLoading ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+            }`}
           >
-            Log In
+            {isLoading ? "Logging in..." : "Log In"}
           </button>
         </form>
 

@@ -3,9 +3,11 @@
 ## Authentication Endpoints
 
 ### POST /api/auth/signup
+
 Register a new user account.
 
 #### Request Body
+
 ```json
 {
   "fullname": "John Doe",
@@ -17,6 +19,7 @@ Register a new user account.
 #### Responses
 
 ##### Success (201 Created)
+
 ```json
 {
   "message": "User created",
@@ -32,6 +35,7 @@ Register a new user account.
 ##### Error Responses
 
 - **400 Bad Request** - Missing required fields
+
 ```json
 {
   "message": "Name, email and password are required"
@@ -39,6 +43,7 @@ Register a new user account.
 ```
 
 - **409 Conflict** - Email already exists
+
 ```json
 {
   "message": "Email already in use"
@@ -46,6 +51,7 @@ Register a new user account.
 ```
 
 - **500 Internal Server Error** - Server error
+
 ```json
 {
   "message": "Server error"
@@ -53,9 +59,11 @@ Register a new user account.
 ```
 
 ### POST /api/auth/login
+
 Login to an existing account.
 
 #### Request Body
+
 ```json
 {
   "email": "john@example.com",
@@ -66,6 +74,7 @@ Login to an existing account.
 #### Responses
 
 ##### Success (200 OK)
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // JWT token
@@ -80,6 +89,7 @@ Login to an existing account.
 ##### Error Responses
 
 - **400 Bad Request** - Missing required fields
+
 ```json
 {
   "message": "Email and password required"
@@ -87,6 +97,7 @@ Login to an existing account.
 ```
 
 - **401 Unauthorized** - Invalid credentials
+
 ```json
 {
   "message": "Invalid credentials"
@@ -94,6 +105,7 @@ Login to an existing account.
 ```
 
 - **500 Internal Server Error** - Server error
+
 ```json
 {
   "message": "Server error"
@@ -101,6 +113,7 @@ Login to an existing account.
 ```
 
 ## Authentication
+
 The API uses JWT (JSON Web Tokens) for authentication. After successful login or signup, you'll receive a JWT token that should be included in subsequent requests in the Authorization header:
 
 ```
